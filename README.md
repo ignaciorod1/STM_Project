@@ -2,4 +2,4 @@
 STM32F4 microcontroler project to control a small robotic arm and communicate with a FPGA
 
 
-çque te jodan bafio
+que te jodan a ti
