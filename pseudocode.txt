@@ -1,0 +1,39 @@
+// pseudocodigo para el brazo
+
+entradas:
+
+1- BITROBOT  de la FPGA	
+2- botón de pausa
+3- botón luz
+4- LDR o potenciómetro para la luz
+5- botón START
+
+salidas:
+
+1- 2 servos
+2- LED verde marcha
+3- LED rojo paro
+4- LED blanco visión 
+5- Electroimán (salida digital a un mosfet con una bobina)
+
+interrupciones:
+
+1- BITROBOT
+2- botón de pausa
+3- botón de luz
+4- botón START
+
+
+temporizdores:
+
+1- 2 salidas PWM a los servos.
+2- comparacion de salida para esperar un tiempo X a coger la pieza.
+
+conversor AD:
+
+1- regulador de LED blanco de vision (LDR)
+
+
+COMUNICACION SERIE:
+
+1- comunicacion serie asincrona con el PC para enviar mensaje de tarea completada (opcional)
