@@ -111,24 +111,33 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM4_Init();
-  /* USER CODE BEGIN 2 */
-	HAL_TIM_PWM_Start (&htim4,TIM_CHANNEL_1); 
-  /* USER CODE END 2 */
-	TIM4->CCR1 = 300;
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+	
+	HAL_TIM_PWM_Start (&htim4,TIM_CHANNEL_1); 	// YAW (sg90 microservo)
+	HAL_TIM_PWM_Start (&htim4,TIM_CHANNEL_2); 	// PITCH (MG15 HD servo)
+		
+	TIM4->CCR1 = 300;		// INITIAL POSITION FOR THE SERVOS
+	HAL_Delay(1000);
+	TIM4->CCR2 = 300;
+	HAL_Delay(1000);
+	
   while (1)
   {
-    /* USER CODE END WHILE */
-	int i;
-		for(i = 0; TIM4->CCR1 < 1300; i++){
+		int i;
+		for(i = 0; TIM4->CCR1 <1200 ; i++){
 			TIM4->CCR1+=10;
 			HAL_Delay(20);
 		}
-			TIM4->CCR1 = 100;
-    /* USER CODE BEGIN 3 */
+		
+		for(i = 0; TIM4->CCR2 < 1200; i++){
+			TIM4->CCR2+=10;
+			HAL_Delay(20);
+		}
+		
+	TIM4->CCR1 = 300;		// INITIAL POSITION FOR THE SERVOS
+		HAL_Delay(1000);
+	TIM4->CCR2 = 300;
+	HAL_Delay(1000);
   }
-  /* USER CODE END 3 */
 }
 
 /**
@@ -221,6 +230,10 @@ static void MX_TIM4_Init(void)
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
