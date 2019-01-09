@@ -1,10 +1,10 @@
 --cpu=Cortex-M4.fp
 "abd_adc_temp\startup_stm32f411xe.o"
+"abd_adc_temp\fonts.o"
+"abd_adc_temp\ssd1306.o"
 "abd_adc_temp\main.o"
 "abd_adc_temp\stm32f4xx_it.o"
 "abd_adc_temp\stm32f4xx_hal_msp.o"
-"abd_adc_temp\fonts.o"
-"abd_adc_temp\ssd1306.o"
 "abd_adc_temp\stm32f4xx_hal_adc.o"
 "abd_adc_temp\stm32f4xx_hal_adc_ex.o"
 "abd_adc_temp\stm32f4xx_hal_i2c.o"
