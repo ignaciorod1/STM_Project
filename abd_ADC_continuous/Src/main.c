@@ -39,6 +39,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include <math.h>
 
 /* USER CODE BEGIN Includes */
 
@@ -71,8 +72,18 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint32_t ADC_val[1], read_val[1];
-uint32_t adc_buffer[1];
+uint32_t ADC_val[1] ,adc_buffer[1];
+
+float therm = 0;
+float R25 = 100000;
+float T25 = 298.15;
+float Vref = 3;
+float Vmeas = 0;
+float Vmeas0 = 0;
+float Rmeas = 0;
+float Tmeas = 0;
+float B = 4092;
+float T = 0;
 
 	void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
 		if(hadc->Instance == ADC1)
@@ -128,9 +139,15 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-		read_val[0] = ADC_val[0];
+		Vmeas0 = (float)ADC_val[0];
 
-    for (int i = 900; TIM4->CCR1 < 1200; i+=5)
+    Vmeas = Vref * (Vmeas0/255);
+    Rmeas = R25 *((Vref/Vmeas)-1);
+
+    Tmeas = 1/((logf(Rmeas/R25)/B) + (1/T25));
+    T = Tmeas - 273;
+
+    for (int i = 800; TIM4->CCR1 < 1200; i+=5)
     {
     __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
     HAL_Delay(10);
