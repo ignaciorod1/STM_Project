@@ -39,15 +39,18 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
-#include <math.h>
 
 /* USER CODE BEGIN Includes */
-
+#include <math.h>
+#include "ssd1306.h"
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
+
+I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim4;
 
@@ -62,7 +65,8 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM4_Init(void);
-                                    
+static void MX_I2C1_Init(void);
+
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
 
@@ -74,6 +78,8 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /* USER CODE BEGIN 0 */
 uint32_t ADC_val[1] ,adc_buffer[1];
 
+uint8_t oledCheck;
+
 float therm = 0;
 float R25 = 100000;
 float T25 = 298.15;
@@ -83,7 +89,45 @@ float Vmeas0 = 0;
 float Rmeas = 0;
 float Tmeas = 0;
 float B = 4092;
+float Temp = 0;
 float T = 0;
+
+
+struct Servo {
+  uint32_t initPos;
+  uint32_t finPos;
+}yaw_servo, pitch_servo;
+
+  void oled_print(float *temp){
+    char oled_string[3];
+
+    sprintf(oled_string, "%f", *temp); // copiamos el valor de la tmeperatura en eun string
+    oledCheck = SSD1306_Init ();
+    SSD1306_UpdateScreen(); //muestra los cambios en el display
+    SSD1306_GotoXY (40,10); //posicion 10,10
+    SSD1306_Puts (oled_string, &Font_11x18, 1);
+    SSD1306_UpdateScreen(); //display
+  }
+
+
+  void move_arm_down(struct Servo *pitch_servo) {  // Movimiento del brazo de arriba a abajo
+
+    for (int i = pitch_servo->initPos; TIM4->CCR1 > pitch_servo->finPos; i-=5)  {
+      __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
+      HAL_Delay(10);
+    }
+    
+  }
+
+  float calc_temp(float *ADC_reading){  // Conversion de la lectura en V del DAC del NTC a temperatura en grados Celsius
+    Vmeas = Vref * (Vmeas0/255);
+    Rmeas = R25 *((Vref/Vmeas)-1);
+    Tmeas = 1/((logf(Rmeas/R25)/B) + (1/T25));
+    T = Tmeas - 273;
+
+    return T;
+  }
+
 
 	void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
 		if(hadc->Instance == ADC1)
@@ -108,7 +152,13 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  yaw_servo.initPos = 1000;
+  yaw_servo.finPos = 2000;
 
+  pitch_servo.initPos = 1900;
+  pitch_servo.finPos = 1300;
+
+  SSD1306_Fill (0); //color negro
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -123,12 +173,16 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_TIM4_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADC_Start_DMA(&hadc1, adc_buffer, 1);
   HAL_TIM_PWM_Start (&htim4,TIM_CHANNEL_1);   // 
 
 
-  __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, 900);
+  __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, pitch_servo.initPos);
+
+  move_arm_down(&pitch_servo);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -141,19 +195,9 @@ int main(void)
   /* USER CODE BEGIN 3 */
 		Vmeas0 = (float)ADC_val[0];
 
-    Vmeas = Vref * (Vmeas0/255);
-    Rmeas = R25 *((Vref/Vmeas)-1);
+    Temp = calc_temp(&Vmeas);
 
-    Tmeas = 1/((logf(Rmeas/R25)/B) + (1/T25));
-    T = Tmeas - 273;
-
-    for (int i = 800; TIM4->CCR1 < 1200; i+=5)
-    {
-    __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
-    HAL_Delay(10);
-    }
-    __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, 900);
-    HAL_Delay(100);
+    oled_print(&Temp);  // sacamos el valor de la temperatura del electroiman por pantalla
 
   }
   /* USER CODE END 3 */
@@ -250,6 +294,26 @@ static void MX_ADC1_Init(void)
 
 }
 
+/* I2C1 init function */
+static void MX_I2C1_Init(void)
+{
+
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 400000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
 /* TIM4 init function */
 static void MX_TIM4_Init(void)
 {
@@ -328,6 +392,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
 }
 

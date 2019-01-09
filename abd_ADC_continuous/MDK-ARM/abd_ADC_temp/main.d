@@ -27,8 +27,14 @@ abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c.h
+abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 abd_adc_temp\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+abd_adc_temp\main.o: ../Inc/ssd1306.h
+abd_adc_temp\main.o: ../Inc/fonts.h
+abd_adc_temp\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+abd_adc_temp\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
