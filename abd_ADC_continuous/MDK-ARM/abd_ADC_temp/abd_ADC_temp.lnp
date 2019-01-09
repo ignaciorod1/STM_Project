@@ -1,0 +1,26 @@
+--cpu=Cortex-M4.fp
+"abd_adc_temp\startup_stm32f411xe.o"
+"abd_adc_temp\main.o"
+"abd_adc_temp\stm32f4xx_it.o"
+"abd_adc_temp\stm32f4xx_hal_msp.o"
+"abd_adc_temp\stm32f4xx_hal_adc.o"
+"abd_adc_temp\stm32f4xx_hal_adc_ex.o"
+"abd_adc_temp\stm32f4xx_hal_tim.o"
+"abd_adc_temp\stm32f4xx_hal_tim_ex.o"
+"abd_adc_temp\stm32f4xx_hal_rcc.o"
+"abd_adc_temp\stm32f4xx_hal_rcc_ex.o"
+"abd_adc_temp\stm32f4xx_hal_flash.o"
+"abd_adc_temp\stm32f4xx_hal_flash_ex.o"
+"abd_adc_temp\stm32f4xx_hal_flash_ramfunc.o"
+"abd_adc_temp\stm32f4xx_hal_gpio.o"
+"abd_adc_temp\stm32f4xx_hal_dma_ex.o"
+"abd_adc_temp\stm32f4xx_hal_dma.o"
+"abd_adc_temp\stm32f4xx_hal_pwr.o"
+"abd_adc_temp\stm32f4xx_hal_pwr_ex.o"
+"abd_adc_temp\stm32f4xx_hal_cortex.o"
+"abd_adc_temp\stm32f4xx_hal.o"
+"abd_adc_temp\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter "abd_ADC_temp\abd_ADC_temp.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "abd_ADC_temp.map" -o abd_ADC_temp\abd_ADC_temp.axf
