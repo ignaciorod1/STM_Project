@@ -34,6 +34,7 @@ abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 abd_adc_temp\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 abd_adc_temp\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+abd_adc_temp\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 abd_adc_temp\main.o: ../Inc/ssd1306.h
 abd_adc_temp\main.o: ../Inc/fonts.h
 abd_adc_temp\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

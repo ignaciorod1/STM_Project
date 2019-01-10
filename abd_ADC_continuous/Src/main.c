@@ -42,6 +42,7 @@
 
 /* USER CODE BEGIN Includes */
 #include <math.h>
+#include <stdbool.h>
 #include "ssd1306.h"
 #include <stdlib.h>
 /* USER CODE END Includes */
@@ -92,6 +93,8 @@ float B = 4092;
 float Temp = 0;
 float T = 0;
 
+bool start_flag = 0;
+
 
 struct Servo {
   uint32_t initPos;
@@ -110,13 +113,44 @@ struct Servo {
   }
 
 
-  void move_arm_down(struct Servo *pitch_servo) {  // Movimiento del brazo de arriba a abajo
+  void go_to_LB(struct Servo *pitch_servo, struct Servo *yaw_servo) {  // ir hacia la cinta
 
     for (int i = pitch_servo->initPos; TIM4->CCR1 > pitch_servo->finPos; i-=5)  {
       __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
       HAL_Delay(10);
     }
-    
+
+    HAL_Delay(sg90delay); //simulamos el movimiento del otro servo porque esta roto
+    /*
+    for (int i = yaw_servo->initPos; TIM4->CCR2 < yaw_servo->finPos; i+=5)  {
+      __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_2, i);   
+      HAL_Delay(10);
+    }
+    */
+  }
+
+
+  void go_to_box(struct Servo *pitch_servo, struct Servo *yaw_servo) {  // ir hacia la caja
+
+    for (int i = pitch_servo->finPos; TIM4->CCR1 < pitch_servo->initPos; i+=5)  {
+      __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
+      HAL_Delay(10);
+    }
+
+    HAL_Delay(sg90delay); //simulamos el movimiento del otro servo porque esta roto
+
+    for (int i = pitch_servo->initPos; TIM4->CCR1 > pitch_servo->finPos; i-=5)  {
+      __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
+      HAL_Delay(10);
+    }
+  }
+
+  void activate_EM(){
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_SET);
+  }
+
+  void deactivate_EM(){
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);
   }
 
   float calc_temp(float *ADC_reading){  // Conversion de la lectura en V del DAC del NTC a temperatura en grados Celsius
@@ -137,6 +171,7 @@ struct Servo {
 	
 	void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_11);
+    start_flag = !start_flag; 
 
 	}
 	
@@ -161,7 +196,7 @@ int main(void)
 
   /* USER CODE BEGIN Init */
   yaw_servo.initPos = 1000;
-  yaw_servo.finPos = 2000;
+  yaw_servo.finPos = 1200;
 
   pitch_servo.initPos = 1900;
   pitch_servo.finPos = 1300;
@@ -184,12 +219,13 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADC_Start_DMA(&hadc1, adc_buffer, 1);
-  HAL_TIM_PWM_Start (&htim4,TIM_CHANNEL_1);   // 
-
+  HAL_TIM_PWM_Start (&htim4,TIM_CHANNEL_1);   
+  HAL_TIM_PWM_Start (&htim4,TIM_CHANNEL_2);  
 
   __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, pitch_servo.initPos);
+	__HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_2, yaw_servo.initPos);
 
-  move_arm_down(&pitch_servo);
+  
 
   /* USER CODE END 2 */
 
@@ -204,6 +240,20 @@ int main(void)
 		Vmeas0 = (float)ADC_val[0];
 
     Temp = calc_temp(&Vmeas);
+
+    if(start_flag){
+
+    go_to_LB(&pitch_servo, &yaw_servo);
+		HAL_Delay(1000);
+		activate_EM();
+
+
+
+    go_to_box(&pitch_servo, &yaw_servo);
+		HAL_Delay(1000);
+    deactivate_EM();
+   }
+
 
     //oled_print(&Temp);  // sacamos el valor de la temperatura del electroiman por pantalla
 
@@ -367,6 +417,11 @@ static void MX_TIM4_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
   HAL_TIM_MspPostInit(&htim4);
 
 }
@@ -402,23 +457,53 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, electromagnet_Pin|lights_interrupt_button_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : PA2 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, pause_red_led_Pin|start_green_led_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : light_button_Pin */
+  GPIO_InitStruct.Pin = light_button_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(light_button_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PD11 */
-  GPIO_InitStruct.Pin = GPIO_PIN_11;
+  /*Configure GPIO pins : electromagnet_Pin lights_interrupt_button_Pin */
+  GPIO_InitStruct.Pin = electromagnet_Pin|lights_interrupt_button_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : start_button_Pin */
+  GPIO_InitStruct.Pin = start_button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(start_button_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : pause_interrupt_button_Pin */
+  GPIO_InitStruct.Pin = pause_interrupt_button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(pause_interrupt_button_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : pause_red_led_Pin start_green_led_Pin */
+  GPIO_InitStruct.Pin = pause_red_led_Pin|start_green_led_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BITROBOT_Pin */
+  GPIO_InitStruct.Pin = BITROBOT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(BITROBOT_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
