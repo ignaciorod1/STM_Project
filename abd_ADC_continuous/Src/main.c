@@ -94,11 +94,14 @@ float Temp = 0;
 float T = 0;
 
 bool start_flag = 0;
+bool magnetON = 0;  // flag para el robot segun esta el iman ON u OFF
+bool boxDrop = 0; // flag para el movimiento de la caja desde la cinta a la cesta
 
 
 struct Servo {
   uint32_t initPos;
   uint32_t finPos;
+  uint32_t Pos;
 }yaw_servo, pitch_servo;
 
   void oled_print(float *temp){
@@ -113,44 +116,19 @@ struct Servo {
   }
 
 
-  void go_to_LB(struct Servo *pitch_servo, struct Servo *yaw_servo) {  // ir hacia la cinta
-
-    for (int i = pitch_servo->initPos; TIM4->CCR1 > pitch_servo->finPos; i-=5)  {
-      __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
-      HAL_Delay(10);
-    }
-
-    HAL_Delay(sg90delay); //simulamos el movimiento del otro servo porque esta roto
-    /*
-    for (int i = yaw_servo->initPos; TIM4->CCR2 < yaw_servo->finPos; i+=5)  {
-      __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_2, i);   
-      HAL_Delay(10);
-    }
-    */
-  }
-
-
-  void go_to_box(struct Servo *pitch_servo, struct Servo *yaw_servo) {  // ir hacia la caja
-
-    for (int i = pitch_servo->finPos; TIM4->CCR1 < pitch_servo->initPos; i+=5)  {
-      __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
-      HAL_Delay(10);
-    }
-
-    HAL_Delay(sg90delay); //simulamos el movimiento del otro servo porque esta roto
-
-    for (int i = pitch_servo->initPos; TIM4->CCR1 > pitch_servo->finPos; i-=5)  {
-      __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, i);   
-      HAL_Delay(10);
-    }
+  void updateServos(struct Servo *pitch_servo, struct Servo *yaw_servo){
+     __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_1, pitch_servo->Pos);
+     __HAL_TIM_SET_COMPARE (&htim4, TIM_CHANNEL_2, yaw_servo->Pos);
   }
 
   void activate_EM(){
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_SET);
+    magnetON = 1;
   }
 
   void deactivate_EM(){
     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);
+    magnetON = 0;
   }
 
   float calc_temp(float *ADC_reading){  // Conversion de la lectura en V del DAC del NTC a temperatura en grados Celsius
@@ -195,11 +173,13 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  yaw_servo.initPos = 1000;
-  yaw_servo.finPos = 1200;
+  yaw_servo.initPos = 1500;
+  yaw_servo.finPos = 1000;
+  yaw_servo.Pos = yaw_servo.initPos;
 
   pitch_servo.initPos = 1900;
   pitch_servo.finPos = 1300;
+  pitch_servo.Pos = pitch_servo.initPos;
 
   SSD1306_Fill (0); //color negro
   /* USER CODE END Init */
@@ -231,8 +211,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+  while (1){
 
   /* USER CODE END WHILE */
 
@@ -243,24 +222,61 @@ int main(void)
 
     if(start_flag){
 
-    go_to_LB(&pitch_servo, &yaw_servo);
-		HAL_Delay(1000);
-		activate_EM();
+      if(!magnetON){
 
+        if(yaw_servo.Pos == yaw_servo.finPos & pitch_servo.Pos == pitch_servo.finPos){
+          activate_EM();
+          HAL_Delay(1000);
+        }
+        if(yaw_servo.Pos > yaw_servo.finPos){  
+         yaw_servo.Pos-= 1;
+         HAL_Delay(1);
+				}
+        if(pitch_servo.Pos > pitch_servo.finPos){ 
+         pitch_servo.Pos-= 1;
+         HAL_Delay(1);
+        }
+      }     
 
+      if(magnetON){
 
-    go_to_box(&pitch_servo, &yaw_servo);
-		HAL_Delay(1000);
-    deactivate_EM();
-   }
+        if(!boxDrop){
+          if(yaw_servo.Pos < yaw_servo.initPos){
+            yaw_servo.Pos+= 1;
+            HAL_Delay(1);         
+          }
 
+          if(pitch_servo.Pos < pitch_servo.initPos){ 
+            pitch_servo.Pos+= 1;
+            HAL_Delay(1);
+          }
 
+          if(yaw_servo.Pos == yaw_servo.initPos & pitch_servo.Pos == pitch_servo.initPos){
+            HAL_Delay(200);
+            boxDrop = true;
+          }
+				}
+				
+        if(boxDrop){
+          pitch_servo.Pos-= 1;
+          HAL_Delay(1);
+          if(pitch_servo.Pos == pitch_servo.finPos){
+            HAL_Delay(1000);
+            deactivate_EM();
+            boxDrop = false;
+          }
+        }
+      
+    }
+  }
+    updateServos(&pitch_servo, &yaw_servo);
     //oled_print(&Temp);  // sacamos el valor de la temperatura del electroiman por pantalla
 
+  
   }
   /* USER CODE END 3 */
-
 }
+
 
 /**
   * @brief System Clock Configuration
