@@ -49,6 +49,30 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define NTC_sensor_Pin GPIO_PIN_0
+#define NTC_sensor_GPIO_Port GPIOA
+#define light_button_Pin GPIO_PIN_2
+#define light_button_GPIO_Port GPIOA
+#define light_button_EXTI_IRQn EXTI2_IRQn
+#define electromagnet_Pin GPIO_PIN_9
+#define electromagnet_GPIO_Port GPIOD
+#define start_button_Pin GPIO_PIN_10
+#define start_button_GPIO_Port GPIOD
+#define lights_interrupt_button_Pin GPIO_PIN_11
+#define lights_interrupt_button_GPIO_Port GPIOD
+#define pitch_servo_Pin GPIO_PIN_12
+#define pitch_servo_GPIO_Port GPIOD
+#define yaw_servo_Pin GPIO_PIN_13
+#define yaw_servo_GPIO_Port GPIOD
+#define pause_interrupt_button_Pin GPIO_PIN_14
+#define pause_interrupt_button_GPIO_Port GPIOD
+#define pause_red_led_Pin GPIO_PIN_6
+#define pause_red_led_GPIO_Port GPIOC
+#define start_green_led_Pin GPIO_PIN_7
+#define start_green_led_GPIO_Port GPIOC
+#define BITROBOT_Pin GPIO_PIN_1
+#define BITROBOT_GPIO_Port GPIOE
+
 /* ########################## Assert Selection ############################## */
 /**
   * @brief Uncomment the line below to expanse the "assert_param" macro in the 
@@ -57,7 +81,7 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
-
+#define sg90delay 1000
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
