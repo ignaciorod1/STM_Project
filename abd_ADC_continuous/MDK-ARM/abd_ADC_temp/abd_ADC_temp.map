@@ -1577,14 +1577,14 @@ Image Symbol Table
     i.calc_temp                              0x080021bc   Section        0  main.o(i.calc_temp)
     i.deactivate_EM                          0x08002238   Section        0  main.o(i.deactivate_EM)
     i.main                                   0x08002258   Section        0  main.o(i.main)
-    i.updateServos                           0x080023f0   Section        0  main.o(i.updateServos)
-    .constdata                               0x08002404   Section        8  stm32f4xx_hal_dma.o(.constdata)
-    flagBitshiftOffset                       0x08002404   Data           8  stm32f4xx_hal_dma.o(.constdata)
-    .constdata                               0x0800240c   Section       16  system_stm32f4xx.o(.constdata)
-    .constdata                               0x0800241c   Section        8  system_stm32f4xx.o(.constdata)
-    .constdata                               0x08002424   Section       64  logf.o(.constdata)
-    logahi                                   0x08002424   Data          32  logf.o(.constdata)
-    logalo                                   0x08002444   Data          32  logf.o(.constdata)
+    i.updateServos                           0x080023e8   Section        0  main.o(i.updateServos)
+    .constdata                               0x080023fc   Section        8  stm32f4xx_hal_dma.o(.constdata)
+    flagBitshiftOffset                       0x080023fc   Data           8  stm32f4xx_hal_dma.o(.constdata)
+    .constdata                               0x08002404   Section       16  system_stm32f4xx.o(.constdata)
+    .constdata                               0x08002414   Section        8  system_stm32f4xx.o(.constdata)
+    .constdata                               0x0800241c   Section       64  logf.o(.constdata)
+    logahi                                   0x0800241c   Data          32  logf.o(.constdata)
+    logalo                                   0x0800243c   Data          32  logf.o(.constdata)
     .data                                    0x20000000   Section       52  main.o(.data)
     .data                                    0x20000034   Section       12  stm32f4xx_hal.o(.data)
     .data                                    0x20000040   Section        4  system_stm32f4xx.o(.data)
@@ -1808,12 +1808,12 @@ Image Symbol Table
     activate_EM                              0x080021a1   Thumb Code    20  main.o(i.activate_EM)
     calc_temp                                0x080021bd   Thumb Code   110  main.o(i.calc_temp)
     deactivate_EM                            0x08002239   Thumb Code    22  main.o(i.deactivate_EM)
-    main                                     0x08002259   Thumb Code   390  main.o(i.main)
-    updateServos                             0x080023f1   Thumb Code    16  main.o(i.updateServos)
-    AHBPrescTable                            0x0800240c   Data          16  system_stm32f4xx.o(.constdata)
-    APBPrescTable                            0x0800241c   Data           8  system_stm32f4xx.o(.constdata)
-    Region$$Table$$Base                      0x08002464   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08002484   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x08002259   Thumb Code   382  main.o(i.main)
+    updateServos                             0x080023e9   Thumb Code    16  main.o(i.updateServos)
+    AHBPrescTable                            0x08002404   Data          16  system_stm32f4xx.o(.constdata)
+    APBPrescTable                            0x08002414   Data           8  system_stm32f4xx.o(.constdata)
+    Region$$Table$$Base                      0x0800245c   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x0800247c   Number         0  anon$$obj.o(Region$$Table)
     start_flag                               0x20000000   Data           1  main.o(.data)
     magnetON                                 0x20000001   Data           1  main.o(.data)
     boxDrop                                  0x20000002   Data           1  main.o(.data)
@@ -1850,9 +1850,9 @@ Memory Map of the image
 
   Image Entry point : 0x08000199
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000024cc, Max: 0x00080000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000024c4, Max: 0x00080000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00002484, Max: 0x00080000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x0000247c, Max: 0x00080000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1982,23 +1982,23 @@ Memory Map of the image
     0x080021a0   0x080021a0   0x0000001c   Code   RO          311    i.activate_EM       main.o
     0x080021bc   0x080021bc   0x0000007c   Code   RO          312    i.calc_temp         main.o
     0x08002238   0x08002238   0x00000020   Code   RO          313    i.deactivate_EM     main.o
-    0x08002258   0x08002258   0x00000198   Code   RO          314    i.main              main.o
-    0x080023f0   0x080023f0   0x00000014   Code   RO          316    i.updateServos      main.o
-    0x08002404   0x08002404   0x00000008   Data   RO         2679    .constdata          stm32f4xx_hal_dma.o
-    0x0800240c   0x0800240c   0x00000010   Data   RO         3276    .constdata          system_stm32f4xx.o
-    0x0800241c   0x0800241c   0x00000008   Data   RO         3277    .constdata          system_stm32f4xx.o
-    0x08002424   0x08002424   0x00000040   Data   RO         3312    .constdata          m_wm.l(logf.o)
-    0x08002464   0x08002464   0x00000020   Data   RO         3692    Region$$Table       anon$$obj.o
+    0x08002258   0x08002258   0x00000190   Code   RO          314    i.main              main.o
+    0x080023e8   0x080023e8   0x00000014   Code   RO          316    i.updateServos      main.o
+    0x080023fc   0x080023fc   0x00000008   Data   RO         2679    .constdata          stm32f4xx_hal_dma.o
+    0x08002404   0x08002404   0x00000010   Data   RO         3276    .constdata          system_stm32f4xx.o
+    0x08002414   0x08002414   0x00000008   Data   RO         3277    .constdata          system_stm32f4xx.o
+    0x0800241c   0x0800241c   0x00000040   Data   RO         3312    .constdata          m_wm.l(logf.o)
+    0x0800245c   0x0800245c   0x00000020   Data   RO         3692    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08002484, Size: 0x00000998, Max: 0x00020000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x0800247c, Size: 0x00000998, Max: 0x00020000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08002484   0x00000034   Data   RW          320    .data               main.o
-    0x20000034   0x080024b8   0x0000000c   Data   RW         3128    .data               stm32f4xx_hal.o
-    0x20000040   0x080024c4   0x00000004   Data   RW         3278    .data               system_stm32f4xx.o
-    0x20000044   0x080024c8   0x00000004   Data   RW         3669    .data               mc_w.l(errno.o)
+    0x20000000   0x0800247c   0x00000034   Data   RW          320    .data               main.o
+    0x20000034   0x080024b0   0x0000000c   Data   RW         3128    .data               stm32f4xx_hal.o
+    0x20000040   0x080024bc   0x00000004   Data   RW         3278    .data               system_stm32f4xx.o
+    0x20000044   0x080024c0   0x00000004   Data   RW         3669    .data               mc_w.l(errno.o)
     0x20000048        -       0x00000400   Zero   RW          174    .bss                ssd1306.o
     0x20000448        -       0x000000f0   Zero   RW          317    .bss                main.o
     0x20000538        -       0x00000060   Zero   RW          318    .bss                main.o
@@ -2013,7 +2013,7 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
          0          0          0          0          0     429028   fonts.o
-      1422        144          0         52        336       9650   main.o
+      1414        144          0         52        336       9658   main.o
         24          6          0          0       1024       2714   ssd1306.o
         36          8        408          0       1024        860   startup_stm32f411xe.o
        180         28          0         12          0       4757   stm32f4xx_hal.o
@@ -2031,7 +2031,7 @@ Image component sizes
         84         18         24          4          0       1231   system_stm32f4xx.o
 
     ----------------------------------------------------------------------
-      8108        574        472         68       2384     532355   Object Totals
+      8100        574        472         68       2384     532363   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         20          0          0          0          0          0   (incl. Padding)
 
@@ -2079,15 +2079,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      8812        652        536         72       2384     524715   Grand Totals
-      8812        652        536         72       2384     524715   ELF Image Totals
-      8812        652        536         72          0          0   ROM Totals
+      8804        652        536         72       2384     524723   Grand Totals
+      8804        652        536         72       2384     524723   ELF Image Totals
+      8804        652        536         72          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 9348 (   9.13kB)
+    Total RO  Size (Code + RO Data)                 9340 (   9.12kB)
     Total RW  Size (RW Data + ZI Data)              2456 (   2.40kB)
-    Total ROM Size (Code + RO Data + RW Data)       9420 (   9.20kB)
+    Total ROM Size (Code + RO Data + RW Data)       9412 (   9.19kB)
 
 ==============================================================================
 

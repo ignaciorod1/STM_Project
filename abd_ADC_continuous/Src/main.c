@@ -167,7 +167,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  yaw_servo.initPos = 2000;
+  yaw_servo.initPos = 1900;
   yaw_servo.finPos = 1000;
   yaw_servo.Pos = yaw_servo.initPos;
 
@@ -218,14 +218,10 @@ int main(void)
 
       if(!magnetON){
 
-        if(yaw_servo.Pos == yaw_servo.finPos & pitch_servo.Pos == pitch_servo.finPos){
+        if(pitch_servo.Pos == pitch_servo.finPos){
           activate_EM();
           HAL_Delay(1000);
         }
-        if(yaw_servo.Pos > yaw_servo.finPos){  
-         yaw_servo.Pos-= 1;
-         HAL_Delay(1);
-				}
         if(pitch_servo.Pos > pitch_servo.finPos){ 
          pitch_servo.Pos-= 1;
          HAL_Delay(1);
@@ -235,8 +231,8 @@ int main(void)
       if(magnetON){
 
         if(!boxDrop){
-          if(yaw_servo.Pos < yaw_servo.initPos){
-            yaw_servo.Pos+= 1;
+          if(yaw_servo.Pos > yaw_servo.finPos){
+            yaw_servo.Pos -= 1;
             HAL_Delay(1);         
           }
 
@@ -252,12 +248,14 @@ int main(void)
 				}
 				
         if(boxDrop){
-          pitch_servo.Pos-= 1;
+          pitch_servo.Pos -= 1;
+					yaw_servo.Pos -= 1;
           HAL_Delay(1);
-          if(pitch_servo.Pos == pitch_servo.finPos){
+          if(pitch_servo.Pos == pitch_servo.finPos && yaw_servo.Pos == yaw_servo.finPos){
             HAL_Delay(1000);
             deactivate_EM();
             boxDrop = false;
+						start_flag = 0;
           }
         }
       
