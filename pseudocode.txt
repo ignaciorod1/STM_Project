@@ -13,27 +13,29 @@ salidas:
 1- 2 servos
 2- LED verde marcha
 3- LED rojo paro
-4- LED blanco visión 
-5- Electroimán (salida digital a un mosfet con una bobina)
+4- pantalla OLED	[DONE]
+5- Electroimán (salida digital a un mosfet con una bobina) [mx]
 
 interrupciones:
 
-1- BITROBOT
-2- botón de pausa
-3- botón de luz
-4- botón START
+1- BITROBOT	[mx]
+2- botón de pausa [mx]
+3- botón START	[DONE]
+4- botón luz	[DONE]
 
+excepciones:
+1- maxTemp
 
 temporizdores:
 
-1- 2 salidas PWM a los servos.
+1- 2 salidas PWM a los servos.	[DONE]
 2- comparacion de salida para esperar un tiempo X a coger la pieza.
 
 conversor AD:
 
-1- regulador de LED blanco de vision (LDR)
+1- lectura de la temperatura del electroiman [DONE]
 
 
 COMUNICACION SERIE:
 
-1- comunicacion serie asincrona con el PC para enviar mensaje de tarea completada (opcional)
+1- comunicacion I2C con pantalla OLED [DONE]

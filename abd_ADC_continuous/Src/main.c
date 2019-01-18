@@ -84,7 +84,7 @@ uint8_t oledCheck;
 float therm = 0;
 float R25 = 100000;
 float T25 = 298.15;
-float Vref = 3;
+float Vref = 3.3;
 float Vmeas = 0;
 float Vmeas0 = 0;
 float Rmeas = 0;
@@ -147,13 +147,6 @@ struct Servo {
 	}
 	
 	
-	void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-		HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_11);
-    start_flag = !start_flag; 
-
-	}
-	
-	
 /* USER CODE END 0 */
 
 /**
@@ -164,6 +157,7 @@ struct Servo {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_7,0);
 
   /* USER CODE END 1 */
 
@@ -173,11 +167,11 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  yaw_servo.initPos = 1500;
+  yaw_servo.initPos = 2000;
   yaw_servo.finPos = 1000;
   yaw_servo.Pos = yaw_servo.initPos;
 
-  pitch_servo.initPos = 1900;
+  pitch_servo.initPos = 1800;
   pitch_servo.finPos = 1300;
   pitch_servo.Pos = pitch_servo.initPos;
 
@@ -275,8 +269,8 @@ int main(void)
   
   }
   /* USER CODE END 3 */
-}
 
+}
 
 /**
   * @brief System Clock Configuration
@@ -478,10 +472,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOE_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, electromagnet_Pin|lights_interrupt_button_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, electromagnet_Pin|lights_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, pause_red_led_Pin|start_green_led_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(start_green_led_GPIO_Port, start_green_led_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : light_button_Pin */
   GPIO_InitStruct.Pin = light_button_Pin;
@@ -489,18 +483,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(light_button_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : electromagnet_Pin lights_interrupt_button_Pin */
-  GPIO_InitStruct.Pin = electromagnet_Pin|lights_interrupt_button_Pin;
+  /*Configure GPIO pins : electromagnet_Pin lights_Pin */
+  GPIO_InitStruct.Pin = electromagnet_Pin|lights_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : start_button_Pin */
-  GPIO_InitStruct.Pin = start_button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : start_Pin */
+  GPIO_InitStruct.Pin = start_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(start_button_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(start_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : pause_interrupt_button_Pin */
   GPIO_InitStruct.Pin = pause_interrupt_button_Pin;
@@ -508,12 +502,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(pause_interrupt_button_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : pause_red_led_Pin start_green_led_Pin */
-  GPIO_InitStruct.Pin = pause_red_led_Pin|start_green_led_Pin;
+  /*Configure GPIO pin : start_green_led_Pin */
+  GPIO_InitStruct.Pin = start_green_led_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(start_green_led_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BITROBOT_Pin */
   GPIO_InitStruct.Pin = BITROBOT_Pin;
@@ -525,9 +519,27 @@ static void MX_GPIO_Init(void)
   HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
+	
+	void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){	// start
+		if( GPIO_Pin == GPIO_PIN_10){
+			HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_7);
+			start_flag = !start_flag; 
+		}
+		
+		else if (GPIO_Pin == GPIO_PIN_7){		//light
+			HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_7);
+		}
+		
+		else{
+			__NOP();
+		}
+	}
 
 /* USER CODE END 4 */
 
