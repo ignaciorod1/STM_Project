@@ -58,20 +58,22 @@
 #define electromagnet_GPIO_Port GPIOD
 #define start_button_Pin GPIO_PIN_10
 #define start_button_GPIO_Port GPIOD
-#define lights_interrupt_button_Pin GPIO_PIN_11
-#define lights_interrupt_button_GPIO_Port GPIOD
+#define start_button_EXTI_IRQn EXTI15_10_IRQn
+#define lights_Pin GPIO_PIN_11
+#define lights_GPIO_Port GPIOD
 #define pitch_servo_Pin GPIO_PIN_12
 #define pitch_servo_GPIO_Port GPIOD
 #define yaw_servo_Pin GPIO_PIN_13
 #define yaw_servo_GPIO_Port GPIOD
 #define pause_interrupt_button_Pin GPIO_PIN_14
 #define pause_interrupt_button_GPIO_Port GPIOD
-#define pause_red_led_Pin GPIO_PIN_6
-#define pause_red_led_GPIO_Port GPIOC
+#define pause_interrupt_button_EXTI_IRQn EXTI15_10_IRQn
+#define pause_led_Pin GPIO_PIN_6
+#define pause_led_GPIO_Port GPIOC
 #define start_green_led_Pin GPIO_PIN_7
 #define start_green_led_GPIO_Port GPIOC
-#define BITROBOT_Pin GPIO_PIN_1
-#define BITROBOT_GPIO_Port GPIOE
+#define bit_fpga_Pin GPIO_PIN_8
+#define bit_fpga_GPIO_Port GPIOA
 
 /* ########################## Assert Selection ############################## */
 /**
